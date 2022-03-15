@@ -63,12 +63,13 @@ model Hashtag {
 model Like {
   id        Int      @id @default(autoincrement())
   photo     Photo    @relation(fields: [photoId], references: [id]) // AUTO-GENERATED
-  user      User     @relation(fields: [userId], references: [id]) // AUTO-GENERATED
+  user      User     @relation(fields: [userId], references: [id]) // AUTO-GENERATED 여기 photo와 user는 실제 DB에 저장되는게 아니라, prisma만을 위해 만들어진 항목임. 
   photoId   Int // AUTO-GENERATED
   userId    Int // AUTO-GENERATED
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // 복수의 필드를 동시에 unique하도록 설정.
   @@unique([photoId, userId])
 }
 
