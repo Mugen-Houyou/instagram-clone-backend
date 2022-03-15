@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": ""
+    "preinstall": "npx npm-force-resolutions",
+    "dev": "nodemon --exec babel-node server --delay 2s",
+    "migrate": "npx prisma migrate dev --preview-feature",
+    "studio": "npx prisma studio"
   },
   "repository": {
     "type": "git",
@@ -15,5 +18,35 @@
   "bugs": {
     "url": "https://github.com/Mugen-Houyou/instagram-clone-backend/issues"
   },
-  "homepage": "https://github.com/Mugen-Houyou/instagram-clone-backend#readme"
+  "homepage": "https://github.com/Mugen-Houyou/instagram-clone-backend#readme",
+  "dependencies": {
+    "@graphql-tools/load-files": "^6.5.3",
+    "@graphql-tools/merge": "^8.2.1",
+    "@graphql-tools/schema": "^8.3.1",
+    "@prisma/client": "^2.14.0",
+    "apollo-server": "^2.25.3",
+    "apollo-server-express": "^2.21.2",
+    "bcrypt": "^5.0.1",
+    "dotenv": "^8.6.0",
+    "express": "^4.17.1",
+    "graphql": "^15.4.0",
+    "graphql-tools": "^7.0.5",
+    "graphql-upload": "^13.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.15",
+    "npm-force-resolutions": "0.0.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.17",
+    "@babel/node": "^7.12.17",
+    "@babel/preset-env": "^7.12.17",
+    "@prisma/cli": "^2.14.0",
+    "nodemon": "^2.0.15",
+    "prettier-plugin-prisma": "^3.9.0"
+  },
+  "resolutions": {
+    "fs-capacitor": "^6.2.0",
+    "graphql-upload": "^11.0.0"
+  }
 }

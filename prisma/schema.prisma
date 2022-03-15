@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Movie {
+  id        Int      @id @default(autoincrement())
+  title     String
+  year      Int
+  genre     String? // not required면 ?을 붙임.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  firstName String
+  lastName  String?
+  username  String    @unique
+  email     String    @unique
+  password  String
+  bio       String?
+  avatar    String?
+  photos    Photo[]
+  likes     Like[]
+  comments  Comment[]
+  followers User[]    @relation("FollowRelation", references: [id])
+  following User[]    @relation("FollowRelation", references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Photo {
+  id        Int       @id @default(autoincrement())
+  user      User      @relation(fields: [userId], references: [id]) // AUTO-GENERATED
+  userId    Int // AUTO-GENERATED
+  file      String
+  caption   String?
+  hashtags  Hashtag[]
+  likes     Like[]
+  comments  Comment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// 우리가 새로운 Photo 하나를 생성할 떄, DB에는 Photo와 user 자체가 생성되는 게 아니라 userId를 갖는다. 해당 userId와 user가 연결된다.
+
+model Hashtag {
+  id        Int      @id @default(autoincrement())
+  hashtag   String   @unique
+  photos    Photo[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  photo     Photo    @relation(fields: [photoId], references: [id]) // AUTO-GENERATED
+  user      User     @relation(fields: [userId], references: [id]) // AUTO-GENERATED
+  photoId   Int // AUTO-GENERATED
+  userId    Int // AUTO-GENERATED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([photoId, userId])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id]) // AUTO-GENERATED
+  photo     Photo    @relation(fields: [photoId], references: [id]) // AUTO-GENERATED
+  payload   String
+  photoId   Int // AUTO-GENERATED
+  userId    Int // AUTO-GENERATED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}
