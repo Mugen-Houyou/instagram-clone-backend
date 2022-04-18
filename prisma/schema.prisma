@@ -35,8 +35,8 @@ model User {
   following User[]    @relation("FollowRelation", references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  rooms     Room[]
-  Message   Message[]
+  rooms     Room[] // 유저 한 명은 여러 명의 톡방에 참가함.
+  Message   Message[] // 유저 한 명은 여러 개의 메시지를 가짐.
 }
 
 model Photo {
@@ -89,8 +89,8 @@ model Comment {
 
 model Room {
   id        Int       @id @default(autoincrement())
-  users     User[]
-  messages  Message[]
+  users     User[] // 톡방 하나는 여러 명의 유저를 가짐.
+  messages  Message[] // 톡방 하나는 여러 개의 메시지를 가짐.
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
@@ -103,6 +103,7 @@ model Message {
   userId    Int
   room      Room     @relation(fields: [roomId], references: [id])
   roomId    Int
+  read      Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
