@@ -10,7 +10,6 @@ export default {
                     some: { id: loggedInUser.id, }
                 }
             }
-        })
-        )
+        }))
     }
 }
