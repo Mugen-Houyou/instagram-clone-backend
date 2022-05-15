@@ -23,9 +23,11 @@ const apollo = new ApolloServer({
   // typeDefs,
   uploads: false,
   context: async ({ req }) => {
-    return {
-      loggedInUser: await getUser(req.headers.token),
-      protectResolver,
+    if (req) {// context가 http랑 ws랑 둘 다 작동할 수 있어야. req는 http만 있으므로.
+      return {
+        loggedInUser: await getUser(req.headers.token),
+        protectResolver,
+      }
     }
   },
 
@@ -60,5 +62,6 @@ const subscriptionServer = SubscriptionServer.create({ schema, execute, subscrib
 httpServer.listen(
   process.env.PORT, () => console.log(`🚀 Server: http://localhost:${process.env.PORT}${apollo.graphqlPath}`)
 );
+// 이제는 http서버 상에서 listen중임. 큰 차이는 없지만.
 
 //https://github.com/GitHubGW/instagram-backend
