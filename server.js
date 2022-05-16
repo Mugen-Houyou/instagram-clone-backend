@@ -22,23 +22,19 @@ const apollo = new ApolloServer({
   // resolvers,
   // typeDefs,
   uploads: false,
-  context: async ({ req }) => {
-    if (req) {// context가 http랑 ws랑 둘 다 작동할 수 있어야. req는 http만 있으므로.
-      return {
-        loggedInUser: await getUser(req.headers.token),
-        protectResolver,
-      }
+  context: async (ctx) => { // 이 context는 http의 context일 수도, ws의 context일 수도 있음.
+    if (ctx.req) {// context가 http랑 ws랑 둘 다 작동할 수 있어야. req는 http만 있으므로.
+      return { loggedInUser: await getUser(ctx.req.headers.token), }
+    } else {
+      const { connection: { context }, } = ctx;
+      return { loggedInUser: context.loggedInUser };
     }
   },
 
   plugins: [
     {
       async serverWillStart() {
-        return {
-          async drainServer() {
-            subscriptionServer.close();
-          },
-        };
+        return { async drainServer() { subscriptionServer.close(); }, };
       },
     },
   ],
@@ -57,7 +53,23 @@ app.use("/uploads", express.static("uploads"));
 
 
 const httpServer = createServer(app);
-const subscriptionServer = SubscriptionServer.create({ schema, execute, subscribe }, { server: httpServer, path: "/graphql" });
+const subscriptionServer = SubscriptionServer.create(
+  {
+    schema,
+    execute,
+    subscribe,
+    // onConnect는 ws에 연결할 때 딱 한번만 호출됨. 
+    onConnect: async ({ token }) => {  // resolvers의 context에서 token을 뽑아옴.
+      if (!token) throw new Error("You can't listen.");
+      const loggedInUser = await getUser(token);
+      return { loggedInUser };
+    }, // websocket의 세상에는 request가 없다. 그러므로 onConnect에서 
+    onDisconnect(webSocket, context) {
+      console.log("Disconnected!");
+    },
+  },
+  { server: httpServer, path: "/graphql" }
+);
 
 httpServer.listen(
   process.env.PORT, () => console.log(`🚀 Server: http://localhost:${process.env.PORT}${apollo.graphqlPath}`)
