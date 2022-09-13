@@ -6,7 +6,7 @@ export default {
   Query: {
     seeFeed: protectedResolver(
       async (_, __, { loggedInUser }) => {
-        return client.photo.findMany({
+        const result= client.photo.findMany({
           where: {
             OR: [
               { user: { followers: { some: { id: loggedInUser.id, }, }, }, }, // 나를 팔로우하는 유저의 사진들.
@@ -14,7 +14,8 @@ export default {
             ]
           },
           orderBy: { createdAt: "desc" },
-        })
+        });
+        return result;
       }),
   },
 }

@@ -13,7 +13,18 @@ export default {
     isMine: ({ userId }, _, { loggedInUser }) => {
       if (loggedInUser) return userId === loggedInUser.id;
       else return false
+    },
+    isLiked: async ({ id }, _, { loggedInUser }) => {
+      if (!loggedInUser) return false;
+
+      const ok = await client.like.findUnique({
+        where:{photoId_userId:{ photoId:id, userId:loggedInUser.id}},
+        select:{ id:true } // id가 존재하는지만 체크하므로.
+      });
+      if (ok) return true;
+      return false
     }
+    
   },
   Hashtag: {
     photos: ({ id }, { page }) => {
